@@ -1,10 +1,9 @@
 # Umbrella release: publish the chart to OCI AND open the namespace-aware GitOps
 # bump PR for helmfiles/sp-control.
 #
-# Same release+publish+promote+kick shape as leartech-ship-proven-umbrella, but
-# targeting the sp-control helmfile. This umbrella is promoted ONLY to SP's own
-# cluster (the current GitOps repo) and NEVER to customer clusters — that is the
-# whole reason it is separate from the ship-proven umbrella.
+# Same release+publish+promote+kick shape as leartech-ship-proven-umbrella. It
+# targets the sp-control helmfile (PLATFORM_PROMOTE_HELMFILE below), which lives
+# only on SP's own GitOps repo — see README for why this umbrella is separate.
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:

@@ -4,7 +4,7 @@
 # knob at the sp-infra world — the SAME issuer, Hydra, infra and secret store the
 # ship-proven umbrella uses, because this deploys into the SAME ship-proven
 # namespace. The only thing that differs from the ship-proven umbrella is that
-# this chart is NEVER promoted to a customer cluster (see README).
+# this chart's release targets only SP's own GitOps helmfile (see README).
 #
 # WHY sp-infra: SP's control plane is part of the platform SP operates for itself,
 # not a Plan and not product handed to customers. It lives in ship-proven and
