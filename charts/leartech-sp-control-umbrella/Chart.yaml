@@ -1,0 +1,14 @@
+apiVersion: v2
+name: leartech-sp-control-umbrella
+description: >
+  SP's own control plane into the ship-proven namespace, authed to sp-infra.
+  See README.md and SP-CONTROL-UMBRELLA-DESIGN.md.
+type: application
+version: 0.0.1
+appVersion: "0.1.0"
+
+dependencies:
+- name: leartech-subscription-api
+  version: 0.0.3
+  repository: oci://us-central1-docker.pkg.dev/product-first/oci-charts
+  condition: spControl.subscriptionApi.enabled

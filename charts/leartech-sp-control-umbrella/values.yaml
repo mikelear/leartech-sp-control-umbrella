@@ -1,0 +1,52 @@
+spControl:
+  authWorld:
+    issuer: https://hydra-sp-infra.jx.leartech.com
+
+  subscriptionApi: { enabled: true }
+
+leartech-subscription-api:
+  ingress:
+    annotations: {}
+
+  config:
+    cluster: ""
+    logFormat: json
+
+  auth:
+    serverUrl: https://hydra-sp-infra.jx.leartech.com
+    audience: leartech-subscription-service
+    extraAcceptedAudiences:
+    - https://leartech-mcp-servers-public-ship-proven.jx.leartech.com
+
+  database:
+    secretName: leartech-subscription-api-db
+    secretKey: DATABASE_URL
+
+  migrations:
+    enabled: true
+
+  gateway:
+    clientSecretName: subscription-api-internal-services
+    clientSecretKey: client-secret
+    clientId: subscription-api-internal-services
+    hydraPublicUrl: https://hydra-sp-infra.jx.leartech.com
+    adminAudience: leartech-ai-gateway
+    adminUrl: http://leartech-ai-gateway-umbrella.gateway.svc.cluster.local:8080
+
+  cors:
+    allowedOrigins: []
+
+  maestro-event-registration:
+    enabled: true
+    name: leartech-subscription-api
+    baseURL: http://leartech-subscription-api.ship-proven.svc.cluster.local:8080
+    authentication:
+      strategy: internal
+      audience: leartech-subscription-service
+    consumes:
+      - name: user.onboarded
+        endpoint: /api/v1/event/user.onboarded
+        retryPolicy:
+          enabled: true
+          maxAttempts: 5
+          initialDelay: 200ms

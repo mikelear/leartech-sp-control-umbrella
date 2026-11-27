@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  creationTimestamp: null
+  name: release
+spec:
+  pipelineSpec:
+    tasks:
+    - name: from-build-pack
+      resources: {}
+      taskSpec:
+        metadata: {}
+        stepTemplate:
+          image: uses:mikelear/leartech-pipeline-catalog/tasks/helm/platform-release.yaml@main
+          name: ""
+          resources: {}
+          workingDir: /workspace/source
+          env:
+          - name: PLATFORM_PROMOTE_NAMESPACE
+            value: ship-proven
+          - name: PLATFORM_PROMOTE_HELMFILE
+            value: helmfiles/sp-control/helmfile.yaml
+          - name: PLATFORM_PROMOTE_CHART
+            value: leartech-sp-control-umbrella
+        steps:
+        - name: ""
+          resources: {}
+  podTemplate:
+    tolerations:
+    - key: sku
+      operator: Equal
+      value: build
+      effect: NoSchedule
+  serviceAccountName: tekton-bot
+  timeout: 1h0m0s
+status: {}
