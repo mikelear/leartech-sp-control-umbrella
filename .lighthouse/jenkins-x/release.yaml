@@ -19,7 +19,7 @@ spec:
           - name: PLATFORM_PROMOTE_NAMESPACE
             value: ship-proven
           - name: PLATFORM_PROMOTE_HELMFILE
-            value: helmfiles/sp-control/helmfile.yaml
+            value: helmfiles/ship-proven/helmfile.yaml
           - name: PLATFORM_PROMOTE_CHART
             value: leartech-sp-control-umbrella
         steps:
