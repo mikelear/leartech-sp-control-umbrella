@@ -1,5 +1,3 @@
-# Delegates to the catalog's chart-repo PR task (lint + this repo's own
-# tests/*/run.sh if any + preview). Same as leartech-ship-proven-umbrella.
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
