@@ -1,95 +1,41 @@
-# leartech-sp-control-umbrella values
-#
-# This umbrella's job: turn each SP CONTROL-PLANE service on/off, and point every
-# knob at the sp-infra world — the SAME issuer, Hydra, infra and secret store the
-# ship-proven umbrella uses, because this deploys into the SAME ship-proven
-# namespace. The only thing that differs from the ship-proven umbrella is that
-# this chart's release targets only SP's own GitOps helmfile (see README).
-#
-# WHY sp-infra: SP's control plane is part of the platform SP operates for itself,
-# not a Plan and not product handed to customers. It lives in ship-proven and
-# auths to sp-infra. Reusing the existing namespace/world means zero new infra and
-# zero new Hydra.
-
 spControl:
   authWorld:
     issuer: https://hydra-sp-infra.jx.leartech.com
 
-  # Staged enablement. Flip false to hold a service back.
   subscriptionApi: { enabled: true }
 
-# ---- subscription-api, authed + wired to sp-infra ------------------------
-#
-# The subchart fullname (hence its in-cluster Service / DNS) is
-# leartech-subscription-api (the chart sets fullnameOverride implicitly via its own
-# templates; the umbrella does not alias it).
 leartech-subscription-api:
-  # Internal resource server + event consumer. Maestro and the MCP reach it by
-  # cluster DNS, so no public ingress/HTTPRoute (an empty-domain route fails the
-  # boot apply, exactly as it does for notification-service in the infra umbrella).
   ingress:
     annotations: {}
 
   config:
-    # gcp|az — set per-cluster by the GitOps overlay; left empty in the chart
-    # default so it is a per-world fact, not a baked one.
     cluster: ""
     logFormat: json
 
   auth:
-    # The chart maps auth.serverUrl -> LEARTECH_AUTH_ISSUER (the JWKS/issuer base).
-    # There is NO separate auth.issuer key; a bare auth.issuer leaves the env empty
-    # and the verifier refuses to start (→ /health/ready 503 forever). Mirrors
-    # gateway-management-api in the ship-proven umbrella.
     serverUrl: https://hydra-sp-infra.jx.leartech.com
-    # This service's own RFC 8707 audience — the aud the MCP forwards its token to.
     audience: leartech-subscription-service
-    # The `subscriptions` MCP forwards a caller token audienced to the PUBLIC MCP
-    # host; OSS Hydra has no RFC 8693 to re-audience it, so the gated routes accept
-    # that host audience additively. The scope + PermAdmin check stays the
-    # authority. Same value the users/gateway-mgmt MCPs use.
     extraAcceptedAudiences:
     - https://leartech-mcp-servers-public-ship-proven.jx.leartech.com
 
-  # THE DATABASE — Postgres DSN from an ExternalSecret the GitOps owns
-  # (ship-proven-resources renders leartech-subscription-api-db from the derived
-  # GSM key subscription-api-db-dsn-ship-proven, the console-api-db pattern). The
-  # DB + role are created by bootstrap/78-create-databases.sh on the existing
-  # sp-infra auth-postgresql, so there is no new Postgres.
   database:
     secretName: leartech-subscription-api-db
     secretKey: DATABASE_URL
 
-  # Apply the goose schema (migrations/0001_initial.sql). Requires the companion
-  # subscription-api chart PR that adds the migrations Job; gated on
-  # migrations.enabled && database.secretName. Enabled here because this deploy
-  # DOES wire a DB.
   migrations:
     enabled: true
 
-  # GATEWAY s2s (outbound) — push each subscription's authoritative budget to its
-  # cluster gateway admin surface (PUT /admin/v1/budgets/{keyid}). The client is
-  # subscription-api-internal-services, minted by sp-infra's Hydra (auth-service
-  # #327); its secret syncs via the subscription-api-s2s ExternalSecret that
-  # auth-service renders. aud=leartech-ai-gateway so the gateway accepts the token.
   gateway:
     clientSecretName: subscription-api-internal-services
     clientSecretKey: client-secret
     clientId: subscription-api-internal-services
     hydraPublicUrl: https://hydra-sp-infra.jx.leartech.com
     adminAudience: leartech-ai-gateway
-    # Same-cluster default gateway admin base. The ai-gateway lives in its own
-    # gateway namespace (mirrors gateway-management-api's aiGateway.adminUrl).
     adminUrl: http://leartech-ai-gateway-umbrella.gateway.svc.cluster.local:8080
 
   cors:
     allowedOrigins: []
 
-  # MAESTRO — CONSUMES user.onboarded to grant the onboarding promo (first-cluster
-  # subscription + plan base + promo budget). Maestro runs in ship-proven; this
-  # service is in the SAME namespace, so the baseURL is a plain in-namespace
-  # Service name. authentication.audience matches the service's own inbound
-  # audience so Maestro's dispatch token is accepted by the verifier.
   maestro-event-registration:
     enabled: true
     name: leartech-subscription-api

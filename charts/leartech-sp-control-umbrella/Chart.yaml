@@ -1,31 +1,13 @@
 apiVersion: v2
 name: leartech-sp-control-umbrella
 description: >
-  SP's OWN control plane, under one reviewed release, deployed into the
-  ship-proven namespace and authed to the sp-infra world (its issuer, its Hydra,
-  its credentials). The FEW services Ship Proven runs to operate the
-  fleet/business — subscriptions today, cluster-creation/provisioning next — that
-  a customer never runs and that must NEVER be promoted to a customer cluster.
-  Sibling of leartech-ship-proven-umbrella (the product, which IS promoted) and
-  leartech-infra-umbrella (real infra). Stays on the current GitOps process while
-  those two move to the managed Argo repo. See README.md and the onboarding
-  workspace's SP-CONTROL-UMBRELLA-DESIGN.md.
+  SP's own control plane into the ship-proven namespace, authed to sp-infra.
+  See README.md and SP-CONTROL-UMBRELLA-DESIGN.md.
 type: application
 version: 0.0.1
 appVersion: "0.1.0"
 
-# Every dependency is a PRODUCT chart already published to the per-cluster OCI
-# registry by its own repo's release pipeline. Each is gated by a flag so an
-# operator can roll the umbrella forward one service at a time. Renovate bumps
-# the pins after this lands (grouped, see renovate.json).
 dependencies:
-# leartech-subscription-api — plans, per-cluster subscriptions, the budget ledger
-# (plan base + promo + top-up), onboarding promos, top-up codes. A subscription IS
-# a cluster; a tenant has many. It is the backing resource server for the
-# `subscriptions` MCP (in leartech-mcp-servers, the ship-proven umbrella) AND an
-# s2s caller that pushes each subscription's authoritative budget to its cluster's
-# gateway. Control-plane: SP runs it for itself — hence this umbrella, not the
-# ship-proven one.
 - name: leartech-subscription-api
   version: 0.0.3
   repository: oci://us-central1-docker.pkg.dev/product-first/oci-charts
