@@ -9,6 +9,6 @@ appVersion: "0.1.0"
 
 dependencies:
 - name: leartech-subscription-api
-  version: 0.0.3
+  version: 0.0.4
   repository: oci://us-central1-docker.pkg.dev/product-first/oci-charts
   condition: spControl.subscriptionApi.enabled

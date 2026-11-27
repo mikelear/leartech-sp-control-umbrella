@@ -1,6 +1,6 @@
 dependencies:
 - name: leartech-subscription-api
   repository: oci://us-central1-docker.pkg.dev/product-first/oci-charts
-  version: 0.0.3
-digest: sha256:d1bb764589f9abb3ac7d447ec7283eba730a0c6e32913df60c1d102449b4dc8c
-generated: "2026-11-27T13:08:24.981146Z"
+  version: 0.0.4
+digest: sha256:42ddf4979228a7fc86f18dd43d0837883ff737c88a24e8168e0f5368c5fa592d
+generated: "2026-11-27T18:47:23.663894514Z"
