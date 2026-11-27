@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>mikelear/leartech-renovate-config"
+  ],
+  "description": "This repo is an UMBRELLA: its dependencies are the service charts we release ourselves. A bump here IS the deploy, so the base preset's weekly schedule, PR throttling and prCreation=status-success are wrong for it. status-success DEADLOCKS: an umbrella branch gets no presubmit until a PR exists, so no PR is ever created. prCreation=immediate opens the PR that then runs the gate.",
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
+  "schedule": [
+    "at any time"
+  ],
+  "packageRules": [
+    {
+      "description": "ONE PR for all of our own service charts, not one per chart. The base preset groups these by '{{{depName}}}', which on an UMBRELLA means N open PRs that each rewrite charts/*/Chart.lock -- and Chart.lock cannot be merged: its last line is a single digest covering every dependency, so any two bumps in flight collide at the same offset. Grouping keeps the preset rule's intent (immediate, self-approved, own charts only) and leaves exactly one lock writer.",
+      "matchManagers": [
+        "helmv3"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "/^us-central1-docker\\.pkg\\.dev/product-first/oci-charts/leartech-/"
+      ],
+      "groupName": "leartech service charts"
+    }
+  ],
+  "prCreation": "immediate",
+  "prNotPendingHours": 4
+}

@@ -1,0 +1,5 @@
+
+# Dependency charts downloaded by `helm dependency build`. They are build output,
+# not source: committing them buried real changes in tgz churn and put a stale
+# copy of every dependency in the tree.
+charts/*/charts/*.tgz
